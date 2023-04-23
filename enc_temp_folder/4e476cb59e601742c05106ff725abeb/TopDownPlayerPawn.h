@@ -26,7 +26,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-protected:
-	UPROPERTY(BlueprintReadWrite, Category = "Player")
+private:
+
 	float MoveSpeed = 10.0f;
 };

@@ -12,11 +12,11 @@ void ATopDownPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
-    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveX", EKeys::A, -1.0f));
+    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveX", EKeys::A, 1.0f));
     InputComponent->BindAxis("MoveX", this, &ATopDownPlayerController::MoveXInput);
-    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveX", EKeys::D, 1.0f));
+    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveX", EKeys::D, -1.0f));
     InputComponent->BindAxis("MoveX", this, &ATopDownPlayerController::MoveXInput);
-    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveY", EKeys::W, -1.0f));
+    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveY", EKeys::W, 1.0f));
     InputComponent->BindAxis("MoveY", this, &ATopDownPlayerController::MoveYInput);
     GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveY", EKeys::S, 1.0f));
     InputComponent->BindAxis("MoveY", this, &ATopDownPlayerController::MoveYInput);
@@ -39,11 +39,7 @@ void ATopDownPlayerController::Tick(float DeltaTime)
     MoveVec.X = FMath::Clamp(MoveVec.X, -1.0f, 1.0f);
     MoveVec.Y = FMath::Clamp(MoveVec.Y, -1.0f, 1.0f);
     const float len = MoveVec.Size();
-    if (len > 1.0f) {
-        MoveVec /= len; //1より大きい場合,normalizeしておく
-    }
-    else if (len < 0.4f)
-    {
+    if (len < 0.01f) {
         MoveVec = FVector2D::ZeroVector;
     }
 }

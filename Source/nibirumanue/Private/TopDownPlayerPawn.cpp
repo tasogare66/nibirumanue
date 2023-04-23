@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TopDownPlayerPawn.h"
+
+#include "TopDownPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATopDownPlayerPawn::ATopDownPlayerPawn()
@@ -23,6 +25,15 @@ void ATopDownPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	const auto* PlayerController = Cast<ATopDownPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	if (ensure(PlayerController))
+	{
+		const auto Vec = PlayerController->GetMoveVec() * MoveSpeed * DeltaTime;
+		FVector NewLocation = GetActorLocation();
+		NewLocation.X += Vec.X;
+		NewLocation.Y += Vec.Y;
+		SetActorLocation(NewLocation);
+	}
 }
 
 // Called to bind functionality to input
