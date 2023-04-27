@@ -21,11 +21,16 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     FVector2D GetMoveVec() const { return MoveVec; }
+    FVector2D GetShootVec() const { return ShootVec; }
 
 private:
     void MoveXInput(float Value);
     void MoveYInput(float Value);
-    
+    void ShootXInput(float Value);
+    void ShootYInput(float Value);
+
     UPROPERTY()
     FVector2D MoveVec = FVector2D(0.0f);
+    UPROPERTY()
+    FVector2D ShootVec = FVector2D(0.0f);
 };
