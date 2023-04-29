@@ -19,9 +19,9 @@ void ATopDownPlayerController::SetupInputComponent()
     GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveY", EKeys::S, 1.0f));
     //Gamepad
     GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveX", EKeys::Gamepad_LeftX, 1.0f));
-    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveY", EKeys::Gamepad_LeftY, -1.0f));
+    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("MoveY", EKeys::Gamepad_LeftY, -1.0f)); //Leftのみ上下反対,Rightは正しい
     GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("ShootX", EKeys::Gamepad_RightX, 1.0f));
-    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("ShootY", EKeys::Gamepad_RightY, -1.0f));
+    GetMutableDefault<UInputSettings>()->AddAxisMapping(FInputAxisKeyMapping("ShootY", EKeys::Gamepad_RightY, 1.0f));
 
     InputComponent->BindAxis("MoveX", this, &ATopDownPlayerController::MoveXInput);
     InputComponent->BindAxis("MoveY", this, &ATopDownPlayerController::MoveYInput);
@@ -31,29 +31,32 @@ void ATopDownPlayerController::SetupInputComponent()
 
 void ATopDownPlayerController::MoveXInput(const float Value)
 {
-    MoveVec.X = Value;
+    mInputData.mMoveInput.X = Value;
 }
 
 void ATopDownPlayerController::MoveYInput(const float Value)
 {
-    MoveVec.Y = Value;
+    mInputData.mMoveInput.Y = Value;
 }
 
 void ATopDownPlayerController::ShootXInput(const float Value)
 {
-    ShootVec.X = Value;
+    mInputData.mShootInput.X = Value;
 }
 
 void ATopDownPlayerController::ShootYInput(float Value)
 {
-    ShootVec.Y = Value;
+    mInputData.mShootInput.Y = Value;
 }
 
 void ATopDownPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    auto LambdaProcessAnalog = [](FVector2D& Vec) {
+    //clear
+    mInputData.Clear();
+
+    auto LambdaProcessAnalog = [](FVector2D& Vec) -> bool {
         Vec.X = FMath::Clamp(Vec.X, -1.0f, 1.0f);
         Vec.Y = FMath::Clamp(Vec.Y, -1.0f, 1.0f);
         const float len = Vec.Size();
@@ -64,8 +67,17 @@ void ATopDownPlayerController::Tick(float DeltaTime)
         else if (len < AnalogThreshold)
         {
             Vec = FVector2D::ZeroVector;
+            return false;
         }
+        return true;
     };
-    LambdaProcessAnalog(MoveVec);
-    LambdaProcessAnalog(ShootVec);
+    if (LambdaProcessAnalog(mInputData.mMoveInput)) {
+        mInputData.Flag.MoveOn = true;
+        mInputData.mMove = mInputData.mMoveInput;
+    }
+    if (LambdaProcessAnalog(mInputData.mShootInput)) {
+        mInputData.Flag.ShootOn = true;
+        mInputData.mShootDir = mInputData.mShootInput;
+    }
+   
 }

@@ -6,6 +6,38 @@
 #include "GameFramework/PlayerController.h"
 #include "TopDownPlayerController.generated.h"
 
+USTRUCT()
+struct FInputData {
+    GENERATED_BODY()
+
+    FInputData() = default;
+    FVector2D mMoveInput{ 0.0f }; //入力から渡される値,Clearで消さない
+    FVector2D mShootInput{ 0.0f }; //入力から渡される値,Clearで消さない
+
+    FVector2D mMove{ 0.0f }; //移動方向
+    FVector2D mShootDir{ 0.0f }; //発射方向
+    FVector2D mDashDir{ 0.0f }; //dash方向
+    FVector2D mMeleeItemDir{ 0.0f }; //近接,item方向
+    union Flag {
+        struct {
+            bool Joystick : 1;
+            bool MoveOn : 1;
+            bool ShootOn : 1;
+            bool DashOn : 1;
+            bool MeleeTrig : 1;
+            bool ItemTrig : 1;
+        };
+        uint32_t All = 0;
+    } Flag;
+    void Clear() {
+        mMove.Set(0.f, 0.f);
+        mShootDir.Set(0.f, 0.f);
+        mDashDir.Set(0.f, 0.f);
+        mMeleeItemDir.Set(0.f, 0.f);
+        Flag.All = 0;
+    }
+};
+
 /**
  * 
  */
@@ -20,8 +52,7 @@ public:
     virtual void SetupInputComponent() override;
     virtual void Tick(float DeltaTime) override;
 
-    FVector2D GetMoveVec() const { return MoveVec; }
-    FVector2D GetShootVec() const { return ShootVec; }
+    const FInputData& GetInputData() const { return mInputData; }
 
 private:
     void MoveXInput(float Value);
@@ -30,7 +61,5 @@ private:
     void ShootYInput(float Value);
 
     UPROPERTY()
-    FVector2D MoveVec = FVector2D(0.0f);
-    UPROPERTY()
-    FVector2D ShootVec = FVector2D(0.0f);
+    FInputData mInputData;
 };

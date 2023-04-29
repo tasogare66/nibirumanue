@@ -26,18 +26,21 @@ void ATopDownPlayerPawn::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    UpdateStatus(DeltaTime);
+
     const auto* PlayerController = Cast<ATopDownPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
     if (ensure(PlayerController))
     {
+        const auto& InputDat = PlayerController->GetInputData();
+
         //shoot
-        const auto ShootVec = PlayerController->GetShootVec();
-        if (ShootVec.Size() > 0.5f)
+        if (InputDat.Flag.ShootOn && mShootRepeat <= 0.0f)
         {
-            Shoot();
+            Shoot(InputDat.mShootDir);
         }
 
         //move
-        const auto MoveVec = PlayerController->GetMoveVec() * MoveSpeed * DeltaTime;
+        const auto MoveVec = InputDat.mMove * MoveSpeed * DeltaTime;
         FVector NewLocation = GetActorLocation();
         NewLocation.X += MoveVec.X;
         NewLocation.Y += MoveVec.Y;
@@ -52,20 +55,27 @@ void ATopDownPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 }
 
-void ATopDownPlayerPawn::Shoot()
+void ATopDownPlayerPawn::UpdateStatus(float DeltaTime)
 {
-    if (auto* World = GetWorld())
+    mShootRepeat = FMath::Max(mShootRepeat - DeltaTime, 0.0f);
+
+}
+
+void ATopDownPlayerPawn::Shoot(const FVector2D& InDir)
+{
+    //FIXME:アセットの参照方法   
+    FName Path = TEXT("/Game/nibirumanue/Blueprints/BP_PlayerBullet.BP_PlayerBullet_C");
+    TSubclassOf<AActor> ActorClass = TSoftClassPtr<AActor>(FSoftObjectPath(Path)).LoadSynchronous();
+    if (ensure(ActorClass))
     {
-        //FIXME:アセットの参照方法   
-        FName Path = TEXT("/Game/nibirumanue/Blueprints/BP_PlayerBullet.BP_PlayerBullet_C");
-        TSubclassOf<AActor> ActorClass = TSoftClassPtr<AActor>(FSoftObjectPath(Path)).LoadSynchronous();
-        if (ensure(ActorClass))
-        {
-            const FVector& SpawnLocation = GetActorLocation();
-            const FRotator& SpawnRotator = GetActorRotation();
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.Owner = this;
-            AActor* Actor = GetWorld()->SpawnActor<AActor>(ActorClass, SpawnLocation, SpawnRotator, SpawnParams);
-        }
+        const FVector& SpawnLocation = GetActorLocation();
+        const FRotator& SpawnRotator = GetActorRotation();
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;
+        auto* Actor = GetWorld()->SpawnActor<APlayerBullet>(ActorClass, SpawnLocation, SpawnRotator, SpawnParams);
+        FVector Dir{ InDir.X, InDir.Y, 0.0f };
+        Actor->Setup(Dir);
     }
+
+    mShootRepeat = 1.0f / 60.f * 3.5f;
 }

@@ -27,9 +27,13 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+    void UpdateStatus(float DeltaTime);
+
     UFUNCTION()
-    void Shoot();
+    void Shoot(const FVector2D& InDir);
+
+    float mShootRepeat = 0.0f;
 
     UPROPERTY(BlueprintReadWrite, Category = "Player")
-    float MoveSpeed = 10.0f;
+    float MoveSpeed = 60.0f;
 };

@@ -10,8 +10,24 @@
  * 
  */
 UCLASS()
-class APlayerBullet : public ABasePaperFlipbookActor
+class APlayerBullet : public AActor
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    APlayerBullet();
+    void Setup(const FVector& InDir);
+
+protected:
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
+
+public:
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
+
+protected:
+    FVector mDir{ 0.0f };
+    float mSpeed = 150.0f;
 };
