@@ -8,7 +8,8 @@ APlayerBullet::APlayerBullet()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
-
+    // collision向け
+    OnActorBeginOverlap.AddDynamic(this, &APlayerBullet::OnBeginOverlap);
 }
 
 void APlayerBullet::Setup(const FVector& InDir)
@@ -32,4 +33,20 @@ void APlayerBullet::Tick(float DeltaTime)
 
     const auto MoveVec = mDir* mSpeed* DeltaTime;
     AddActorWorldOffset(MoveVec, true);
+
+    if (mFlag.ToBeDestroyed)
+    {
+        if (UWorld* World = GetWorld())
+        {
+            World->DestroyActor(this);
+        }
+    }
+}
+
+void APlayerBullet::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+    if (OtherActor->ActorHasTag(TEXT("Enemy")))
+    {
+        mFlag.ToBeDestroyed = true;
+    }
 }

@@ -27,7 +27,16 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+    UFUNCTION()
+    void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
 protected:
     FVector mDir{ 0.0f };
     float mSpeed = 150.0f;
+    union Flag {
+        struct {
+            bool ToBeDestroyed : 1;
+        };
+        uint8_t All = 0;
+    } mFlag;
 };
