@@ -5,6 +5,7 @@
 #include "PlayerBullet.h"
 #include "TopDownPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ATopDownPlayerPawn::ATopDownPlayerPawn()
@@ -68,12 +69,14 @@ void ATopDownPlayerPawn::Shoot(const FVector2D& InDir)
     TSubclassOf<AActor> ActorClass = TSoftClassPtr<AActor>(FSoftObjectPath(Path)).LoadSynchronous();
     if (ensure(ActorClass))
     {
-        const FVector& SpawnLocation = GetActorLocation();
-        const FRotator& SpawnRotator = GetActorRotation();
+        FVector SpawnLocation = GetActorLocation();
+        SpawnLocation.Z -= 0.1f; //playerより後ろに
+        const FVector Dir{ InDir.X, InDir.Y, 0.0f };
+        const FRotator& SpawnRotator = UKismetMathLibrary::Conv_VectorToRotator(Dir);
         FActorSpawnParameters SpawnParams;
         SpawnParams.Owner = this;
         auto* Actor = GetWorld()->SpawnActor<APlayerBullet>(ActorClass, SpawnLocation, SpawnRotator, SpawnParams);
-        FVector Dir{ InDir.X, InDir.Y, 0.0f };
+
         Actor->Setup(Dir);
     }
 
