@@ -27,7 +27,7 @@ public:
     AEneSnake();
 
 protected:
-    virtual void Tick(float Deltatime) override;
+    virtual void Tick(float DeltaTime) override;
 
     UFUNCTION()
     void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
