@@ -33,5 +33,5 @@ protected:
     int64 mEneCount = 0;
 
     UPROPERTY(BlueprintReadWrite, Category = "EneSpawner")
-    int64 mEneCountMax = 100;
+    int64 mEneCountMax = 1000;
 };
