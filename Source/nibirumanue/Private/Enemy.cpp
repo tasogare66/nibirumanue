@@ -3,21 +3,34 @@
 
 #include "Enemy.h"
 
+#include "PlayerArms.h"
 #include "Kismet/GameplayStatics.h"
 
 AEnemy::AEnemy()
 {
+    // collision向け
     Tags.AddUnique(TEXT("Enemy"));
 }
 
-AEneSnake::AEneSnake()
-{
-}
-
-void AEneSnake::Tick(float DeltaTime)
+void AEnemy::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    if (!IsAlive())
+    {
+        if (UWorld* World = GetWorld())
+        {
+            World->DestroyActor(this);
+            return;
+        }
+    }
+
+    UpdateEne(DeltaTime);
+}
+
+
+void AEneSnake::UpdateEne(float DeltaTime)
+{
     if (const auto* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0))
     {
         const auto Location = GetActorLocation();
@@ -26,13 +39,5 @@ void AEneSnake::Tick(float DeltaTime)
         Dir.Normalize();
         const auto Len = 9.f * DeltaTime * 1.f; // GameSeq::inst().getDifV(1.f, 3.f);
         SetActorLocationAndRotation(Location + Dir * Len, FRotator(Dir.X < 0.f ? 180.f : 0.f, 0.f, 0.f), true);
-    }
-}
-
-void AEneSnake::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
-{
-    if (UWorld* World = GetWorld())
-    {
-        World->DestroyActor(this);
     }
 }

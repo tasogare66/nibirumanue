@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PlayerBullet.h"
+
+#include "Enemy.h"
 
 // Sets default values
 APlayerBullet::APlayerBullet()
@@ -45,8 +45,23 @@ void APlayerBullet::Tick(float DeltaTime)
 
 void APlayerBullet::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+    if (!IsAlive()) return;
+
     if (OtherActor->ActorHasTag(TEXT("Enemy")))
     {
-        mFlag.ToBeDestroyed = true;
+        // 敵にダメージを与える
+        auto* Enemy = Cast<AEnemy>(OtherActor);
+        if (!IsValid(Enemy)) return;
+        if (!Enemy->IsAlive()) return;
+
+        const auto GiveDmg = GetPower();
+        const auto GivenDmg = Enemy->GetHealth();
+        Enemy->SubHealth(GiveDmg);
+        this->SubHealth(GivenDmg);
+
+        if (!IsAlive())
+        {
+            mFlag.ToBeDestroyed = true;
+        }
     }
 }

@@ -16,6 +16,29 @@ class AEnemy : public AGameBaseActor
 
 public:
     AEnemy();
+
+    bool SubHealth(float v) {
+        v = FMath::Max(v, 0.0f); //負の値は不可
+        mHealth = FMath::Max(mHealth - v, 0.0f);
+        mFlag.IsDead = (mHealth <= 0.0f);
+        return mFlag.IsDead;
+    }
+    float GetHealth() const { return mHealth; }
+    bool IsAlive() const { return !mFlag.IsDead; }
+
+protected:
+    virtual void Tick(float DeltaTime) override;
+
+    // interface
+    virtual void UpdateEne(float DeltaTime) {}
+
+    float mHealth = 1.0f;
+    union Flag {
+        struct {
+            bool IsDead : 1;
+        };
+        uint8_t All = 0;
+    } mFlag;
 };
 
 UCLASS()
@@ -24,11 +47,8 @@ class AEneSnake : public AEnemy
     GENERATED_BODY()
 
 public:
-    AEneSnake();
+    AEneSnake() = default;
 
 protected:
-    virtual void Tick(float DeltaTime) override;
-
-    UFUNCTION()
-    void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+    virtual void UpdateEne(float DeltaTime) override;
 };

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePaperFlipbookActor.h"
+#include "PlayerArms.h"
 #include "PlayerBullet.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class APlayerBullet : public AActor
+class APlayerBullet : public APlayerArms
 {
     GENERATED_BODY()
 
