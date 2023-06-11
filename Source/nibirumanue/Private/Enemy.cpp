@@ -36,10 +36,12 @@ void AEnemy::SpawnDefeatedEffect()
 {
     if (IsValid(DefeatedEffect) && DefeatedEffect->IsValid())
     {
+        auto Location = GetActorLocation();
+        Location.Z = -100.0f;
         UNiagaraComponent* NewEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
             GetWorld(),
             DefeatedEffect,
-            GetActorLocation(),
+            Location,
             FRotator(0),
             FVector(1),
             true,
