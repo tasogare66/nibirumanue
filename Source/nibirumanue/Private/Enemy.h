@@ -6,6 +6,8 @@
 #include "GameBaseActor.h"
 #include "Enemy.generated.h"
 
+class UNiagaraSystem;
+
 /**
  * 
  */
@@ -32,6 +34,8 @@ protected:
     // interface
     virtual void UpdateEne(float DeltaTime) {}
 
+    void SpawnDefeatedEffect();
+
     float mHealth = 1.0f;
     union Flag {
         struct {
@@ -39,6 +43,9 @@ protected:
         };
         uint8_t All = 0;
     } mFlag;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    UNiagaraSystem* DefeatedEffect = nullptr;
 };
 
 UCLASS()

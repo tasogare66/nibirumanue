@@ -5,6 +5,9 @@
 
 #include "PlayerArms.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 
 AEnemy::AEnemy()
 {
@@ -20,12 +23,30 @@ void AEnemy::Tick(float DeltaTime)
     {
         if (UWorld* World = GetWorld())
         {
+            SpawnDefeatedEffect();
             World->DestroyActor(this);
             return;
         }
     }
 
     UpdateEne(DeltaTime);
+}
+
+void AEnemy::SpawnDefeatedEffect()
+{
+    if (IsValid(DefeatedEffect) && DefeatedEffect->IsValid())
+    {
+        UNiagaraComponent* NewEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+            GetWorld(),
+            DefeatedEffect,
+            GetActorLocation(),
+            FRotator(0),
+            FVector(1),
+            true,
+            true,
+            ENCPoolMethod::AutoRelease,
+            true);
+    }
 }
 
 
