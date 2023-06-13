@@ -8,7 +8,7 @@ public class nibirumanue : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "NiagaraCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "NiagaraCore", "LuaMachine" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
