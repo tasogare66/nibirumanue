@@ -5,6 +5,9 @@
 
 #include "Enemy.h"
 #include "GameUtil.h"
+#include "LuaEneSpawner.h"
+#include "LuaMachine.h"
+#include "LuaBlueprintFunctionLibrary.h"
 
 // Sets default values
 AEneSpawner::AEneSpawner()
@@ -18,24 +21,46 @@ AEneSpawner::AEneSpawner()
 void AEneSpawner::BeginPlay()
 {
     Super::BeginPlay();
-    
+
+    // Luaステート,singletonみたい
+    mLuaState = Cast<UEneSpawnerLuaState>(FLuaMachineModule::Get().GetLuaState(UEneSpawnerLuaState::StaticClass(), GetWorld()));
+
+    const FString ScriptPath = FPaths::Combine(mLuaState->LuaPath, TEXT("level0.lua"));
+    const auto Ret = ULuaBlueprintFunctionLibrary::LuaRunNonContentFile(this, mLuaState->StaticClass(), ScriptPath, false); // スクリプトをロード＆実行
+    ensure(!Ret.IsNil());
+    ResetThread();
 }
 
-// Called every frame
-void AEneSpawner::Tick(float DeltaTime)
+void AEneSpawner::ResetThread()
 {
-    Super::Tick(DeltaTime);
-
+    if (IsValid(mLuaState))
+    {
+        mThread = mLuaState->CreateLuaThread(FLuaValue());
+        mThread.LuaState->GetGlobal("spawn_exec"); //実行する関数
+    }
+    else
+    {
+        ensure(false);
+    }
 }
 
 void AEneSpawner::UpdateSpawn(float DeltaTime)
 {
+    if (IsValid(mLuaState))
+    {
+        mLuaState->UpdateElapsedTime(DeltaTime);
+
+        //FIXME:やり方わからない,GetInternalLuaState で直接呼び出し
+        auto thread = mThread.LuaState->GetInternalLuaState();
+        lua_resume(mLuaState->GetInternalLuaState(), thread, 0);
+    }
+
     TestSpawn();
 }
 
 void AEneSpawner::SpawnEne()
 {
-    //FIXME:�A�Z�b�g�̎Q�ƕ��@   
+    //FIXME:アセットの参照方法   
     FName Path = TEXT("/Game/nibirumanue/Blueprints/BP_EneSnake.BP_EneSnake_C");
     TSubclassOf<AActor> ActorClass = TSoftClassPtr<AActor>(FSoftObjectPath(Path)).LoadSynchronous();
     if (ensure(ActorClass))

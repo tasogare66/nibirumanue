@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LuaState.h"
 #include "EneSpawner.generated.h"
+
+class UEneSpawnerLuaState;
+class UEneSpawnerLuaComponent;
 
 UCLASS()
 class AEneSpawner : public AActor
@@ -20,18 +24,21 @@ protected:
     virtual void BeginPlay() override;
 
 public:	
-    // Called every frame
-    virtual void Tick(float DeltaTime) override;
-
-    void UpdateSpawn(float DeltaTime);
+    void ResetThread();
+    void UpdateSpawn(float DeltaTime); //更新処理,ATopDownGameState::Tickで更新される
 
 protected:
     void SpawnEne();
     void TestSpawn();
 
-    UPROPERTY(BlueprintReadOnly, Category = "EneSpawner")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EneSpawner")
     int64 mEneCount = 0;
 
-    UPROPERTY(BlueprintReadWrite, Category = "EneSpawner")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EneSpawner")
     int64 mEneCountMax = 1000;
+
+    UPROPERTY()
+    UEneSpawnerLuaState* mLuaState = nullptr;
+    UPROPERTY()
+    FLuaValue mThread;
 };
