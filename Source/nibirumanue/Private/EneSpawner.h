@@ -41,4 +41,6 @@ protected:
     UEneSpawnerLuaState* mLuaState = nullptr;
     UPROPERTY()
     FLuaValue mThread;
+
+    bool bEndFlag = false;
 };

@@ -27,7 +27,7 @@ void AEneSpawner::BeginPlay()
 
     const FString ScriptPath = FPaths::Combine(mLuaState->LuaPath, TEXT("level0.lua"));
     const auto Ret = ULuaBlueprintFunctionLibrary::LuaRunNonContentFile(this, mLuaState->StaticClass(), ScriptPath, false); // スクリプトをロード＆実行
-    ensure(!Ret.IsNil());
+    //ensure(!Ret.IsNil());
     ResetThread();
 }
 
@@ -37,6 +37,7 @@ void AEneSpawner::ResetThread()
     {
         mThread = mLuaState->CreateLuaThread(FLuaValue());
         mThread.LuaState->GetGlobal("spawn_exec"); //実行する関数
+        bEndFlag = false;
     }
     else
     {
@@ -46,13 +47,30 @@ void AEneSpawner::ResetThread()
 
 void AEneSpawner::UpdateSpawn(float DeltaTime)
 {
-    if (IsValid(mLuaState))
+    if (!bEndFlag && IsValid(mLuaState))
     {
         mLuaState->UpdateElapsedTime(DeltaTime);
 
         //FIXME:やり方わからない,GetInternalLuaState で直接呼び出し
         auto thread = mThread.LuaState->GetInternalLuaState();
-        lua_resume(mLuaState->GetInternalLuaState(), thread, 0);
+        int status = lua_resume(mLuaState->GetInternalLuaState(), thread, 0);
+        switch (status) {
+        case LUA_OK:
+        case LUA_YIELD:
+            break;
+        default:
+            {
+                auto tmp =lua_tostring(thread, -1);
+                bEndFlag = true;
+                ensure(false);
+            }
+            break;
+        }
+
+        if (auto ret = mThread.LuaState->ToInteger(-1)) {
+            // 終了
+            bEndFlag = true;
+        }
     }
 
     TestSpawn();
