@@ -7,8 +7,9 @@ public class nibirumanue : ModuleRules
 	public nibirumanue(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "NiagaraCore", "LuaMachine" });
+        CppStandard = CppStandardVersion.Cpp17;
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "NiagaraCore", "LuaMachine" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
