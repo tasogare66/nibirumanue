@@ -5,6 +5,7 @@
 
 #include "Enemy.h"
 #include "GameUtil.h"
+#include "LuaScript.h"
 
 // Sets default values
 AEneSpawner::AEneSpawner()
@@ -24,6 +25,7 @@ void AEneSpawner::BeginPlay()
     //const FString ScriptPath = FPaths::Combine(mLuaState->LuaPath, TEXT("level0.lua"));
     //const auto Ret = ULuaBlueprintFunctionLibrary::LuaRunNonContentFile(this, mLuaState->StaticClass(), ScriptPath, false); // スクリプトをロード＆実行
     //ensure(!Ret.IsNil());
+    ULuaScript::test();
 }
 
 void AEneSpawner::UpdateSpawn(float DeltaTime)
