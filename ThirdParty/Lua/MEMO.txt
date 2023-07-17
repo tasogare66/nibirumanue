@@ -1,0 +1,4 @@
+lua-5.4.6/src/luavs.bat を実行してbuild
+x64 Native Tools Command Prompt for VS 2022 で実行した
+
+src直下にlibなど出力される、lib/win64 以下に手動で移動させた。
