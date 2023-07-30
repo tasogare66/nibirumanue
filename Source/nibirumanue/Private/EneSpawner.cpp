@@ -25,7 +25,8 @@ void AEneSpawner::BeginPlay()
     //const FString ScriptPath = FPaths::Combine(mLuaState->LuaPath, TEXT("level0.lua"));
     //const auto Ret = ULuaBlueprintFunctionLibrary::LuaRunNonContentFile(this, mLuaState->StaticClass(), ScriptPath, false); // スクリプトをロード＆実行
     //ensure(!Ret.IsNil());
-    ULuaScript::test();
+    mScript = NewObject<ULuaScript>(this, ULuaScript::StaticClass());
+    mScript->Initialize(TEXT("level0.lua"));
 }
 
 void AEneSpawner::UpdateSpawn(float DeltaTime)

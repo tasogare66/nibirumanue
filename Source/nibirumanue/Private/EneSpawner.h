@@ -8,6 +8,7 @@
 
 class UEneSpawnerLuaState;
 class UEneSpawnerLuaComponent;
+class ULuaScript;
 
 UCLASS()
 class AEneSpawner : public AActor
@@ -34,4 +35,7 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EneSpawner")
     int64 mEneCountMax = 1000;
+
+    UPROPERTY()
+    ULuaScript* mScript;
 };
